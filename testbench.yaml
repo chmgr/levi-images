@@ -1,0 +1,2 @@
+providers:
+  - MehrIt\LeviImages\Provider\LeviImagesServiceProvider
