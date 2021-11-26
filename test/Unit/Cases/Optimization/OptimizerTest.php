@@ -159,6 +159,79 @@
 
 		}
 
+		public function testUseOptimizers() {
+
+			$this->withTempTestImage('test.png', function ($file) {
+
+				$o = new Optimizer();
+
+
+				$opt1 = \Mockery::mock(\Spatie\ImageOptimizer\Optimizer::class);
+				$opt1
+					->shouldReceive('getCommand')
+					->once()
+					->andReturn('testOptimize -run');
+				$opt1
+					->shouldReceive('binaryName')
+					->andReturn('testOptimize');
+				$opt1
+					->shouldReceive('canHandle')
+					->andReturn(true);
+				$opt1
+					->shouldReceive('setImagePath')
+					->andReturnSelf();
+				$opt1
+					->shouldReceive('setOptions')
+					->andReturnSelf();
+
+				$opt2 = \Mockery::mock(\Spatie\ImageOptimizer\Optimizer::class);
+				$opt2
+					->shouldReceive('getCommand')
+					->once()
+					->andReturn('testOptimize -run');
+				$opt2
+					->shouldReceive('binaryName')
+					->andReturn('testOptimize');
+				$opt2
+					->shouldReceive('canHandle')
+					->andReturn(true);
+				$opt2
+					->shouldReceive('setImagePath')
+					->andReturnSelf();
+				$opt2
+					->shouldReceive('setOptions')
+					->andReturnSelf();
+				
+				$opt3 = \Mockery::mock(\Spatie\ImageOptimizer\Optimizer::class);
+				$opt3
+					->shouldReceive('getCommand')
+					->once()
+					->andReturn('testOptimize -run');
+				$opt3
+					->shouldReceive('binaryName')
+					->andReturn('testOptimize');
+				$opt3
+					->shouldReceive('canHandle')
+					->andReturn(true);
+				$opt3
+					->shouldReceive('setImagePath')
+					->andReturnSelf();
+				$opt3
+					->shouldReceive('setOptions')
+					->andReturnSelf();
+
+
+				$o1 = $o->useOptimizers([$opt1, $opt2]);
+				$o2 = $o1->useOptimizers([$opt3]);
+
+
+				$this->assertSame($o1, $o1->optimizeFile($file));
+				$this->assertSame($o2, $o2->optimizeFile($file));
+
+			});
+
+		}
+
 		public function testOptimizeFile_png() {
 
 			$this->withTempTestImage('test.png', function ($file) {

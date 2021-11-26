@@ -13,12 +13,17 @@
 	class Optimizer
 	{
 		use TemporaryFiles;
-		
+
 		const FORMAT_SVG = 'svg';
 		const FORMAT_PNG = 'png';
 		const FORMAT_JPEG = 'jpeg';
 		const FORMAT_WEBP = 'webp';
-		const FORMAT_GIF= 'gif';
+		const FORMAT_GIF = 'gif';
+
+		/**
+		 * @var array
+		 */
+		protected $config;
 
 		/**
 		 * @var callable
@@ -31,12 +36,37 @@
 		protected $timeout = 60;
 
 		/**
+		 * @var \Spatie\ImageOptimizer\Optimizer[]
+		 */
+		protected $optimizers = [];
+
+		/**
 		 * @param array $config
 		 */
 		public function __construct(array $config = []) {
+			$this->config  = $config;
 			$this->timeout = ($config['timeout'] ?? 60) ?: 60;
 		}
 
+		/**
+		 * Creates a new instance using the given optimizers
+		 * @param \Spatie\ImageOptimizer\Optimizer[] $optimizers The optimizers
+		 * @return $this
+		 */
+		public function useOptimizers(array $optimizers): Optimizer {
+
+			// check that all given optimizers implement the Optimizer interface
+			foreach ($optimizers as $curr) {
+				if (!($curr instanceof \Spatie\ImageOptimizer\Optimizer))
+					throw new InvalidArgumentException('Each optimizer must be an instance of ' . \Spatie\ImageOptimizer\Optimizer::class . ', got ' . (is_object($curr) ? get_class($curr) : gettype($curr)));
+			}
+
+			$ret = new static($this->config);
+
+			$ret->optimizers = $optimizers;
+
+			return $ret;
+		}
 
 		/**
 		 * Sets a callback which resolves the optimizers to use
@@ -45,7 +75,7 @@
 		 */
 		public function setOptimizersResolver(callable $resolver): Optimizer {
 			$this->optimizersResolver = $resolver;
-			
+
 			return $this;
 		}
 
@@ -75,7 +105,7 @@
 		public function getOptimizers(): array {
 			return $this->chain()->getOptimizers();
 		}
-		
+
 		/**
 		 * Optimizes the given file
 		 * @param string $path The path
@@ -109,14 +139,14 @@
 					if (!empty($outRes) && is_resource($outRes))
 						fclose($outRes);
 				}
-				
-			} else {
-				
+
+			}
+			else {
+
 				$this->optimizeFileToFile($path, $outputPath);
 			}
-			
-			
-			
+
+
 			return $this;
 		}
 
@@ -128,17 +158,17 @@
 		public function optimizeResource($resource) {
 
 			$firstBytes = fread($resource, 100);
-			
+
 			// We need to detect SVGs here. This is because SVGO requires files to have .svg extension.
 			$isSvg = (strpos($firstBytes, '<?xml') !== false) || (strpos($firstBytes, '<svg') !== false);
-			
+
 			return $this->withTempFile(function ($tempFile) use ($firstBytes, $resource) {
-				
+
 				file_put_contents($tempFile, $firstBytes);
 				file_put_contents($tempFile, $resource, FILE_APPEND);
-				
+
 				return $this->optimizeAsResource($tempFile);
-				
+
 			}, null, $isSvg ? 'svg' : null /* use .svg as required by SVGO */);
 		}
 
@@ -150,11 +180,11 @@
 		 * @return resource A resource with optimized the image
 		 */
 		public function optimizeImage(ImageInterface $image, string $format, array $saveOptions = []) {
-			
-			return $this->withTempFile(function($tempFile) use ($image, $format, $saveOptions) {
-				
+
+			return $this->withTempFile(function ($tempFile) use ($image, $format, $saveOptions) {
+
 				$image = $image->strip();
-				
+
 				switch ($format) {
 					case self::FORMAT_JPEG:
 					case self::FORMAT_PNG:
@@ -162,21 +192,21 @@
 					case self::FORMAT_GIF:
 					case self::FORMAT_SVG:
 						$image->save($tempFile, $saveOptions);
-						
+
 						break;
-						
+
 					default:
 						throw new InvalidArgumentException("Invalid format \"{$format}\" for optimizing raster image");
 				}
 
-				return $this->optimizeAsResource($tempFile);	
-				
+				return $this->optimizeAsResource($tempFile);
+
 			}, null, $format);
-			
+
 		}
 
 		/**
-		 * Optimizes the given temporary file and returns a resource 
+		 * Optimizes the given temporary file and returns a resource
 		 * @param string $temporaryFile The temporary file
 		 * @return resource The resource
 		 */
@@ -187,7 +217,7 @@
 			$ret = tmpfile();
 			if (!$ret)
 				throw new RuntimeException("Failed to create a temporary file.");
-			
+
 			try {
 				$inRes = fopen($temporaryFile, 'r');
 				if ($inRes === false)
@@ -199,10 +229,10 @@
 				if (is_resource($inRes))
 					fclose($inRes);
 			}
-			
+
 			if (!rewind($ret))
 				throw new RuntimeException("Failed rewind temporary file.");
-			
+
 			return $ret;
 		}
 
@@ -222,26 +252,31 @@
 		 * @return OptimizerChain
 		 */
 		protected function chain(): OptimizerChain {
-			
-			if ($this->optimizersResolver) {
-				
+
+			if ($this->optimizers) {
+				$chain = new OptimizerChain();
+
+				$chain->setOptimizers($this->optimizers);
+			}
+			else if ($this->optimizersResolver) {
+
 				$optimizers = call_user_func($this->optimizersResolver);
 
 				$chain = new OptimizerChain();
-								
-				foreach(Arr::wrap($optimizers) as $index => $currOptimizer) {
+
+				foreach (Arr::wrap($optimizers) as $index => $currOptimizer) {
 					if (!($currOptimizer instanceof \Spatie\ImageOptimizer\Optimizer))
 						throw new RuntimeException('The optimizers resolver must return only ' . \Spatie\ImageOptimizer\Optimizer::class . ', got ' . (is_object($currOptimizer) ? get_class($currOptimizer) : strtolower(gettype($currOptimizer))) . ' at index ' . $index);
-					
+
 					$chain->addOptimizer($currOptimizer);
-				}			
+				}
 			}
 			else {
 				$chain = OptimizerChainFactory::create();
 			}
 
 			$chain->setTimeout($this->timeout);
-			
+
 			return $chain;
 		}
 	}

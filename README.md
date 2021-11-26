@@ -292,6 +292,52 @@ is `Optimizer::FORMAT_SVG`. If you want a raster image output,
 first import as raster image.
 
 
+#### Customizing optimizers
+
+If you want to use a custom set of optimizers or other than default
+optimization settings, you can set a resolver function which 
+returns the optimizers to use:
+
+```php
+LeviImages::optimizer()
+    ->setOptimizersResolver(function() {
+    
+        return [
+            new Jpegoptim([
+                '--max=85',
+                '--strip-all',
+                '--all-progressive',
+            ]),
+            return new Cwebp([
+                '-m 6',
+                '-pass 10',
+                '-mt',
+                '-q 80',
+            ]); 
+        ];    
+    });
+```
+
+Using `setOptimizersResolver()` changes the global optimizer chain.
+If you only want to change optimizers for a single optimization,
+you can use `useOptimizers()` to create a new instance with the
+given optimizers:
+
+```php
+LeviImages::optimizer()
+    ->useOptimizers([
+        new Jpegoptim([
+                '--max=90',
+            ]),
+       ]
+   );
+```
+
+All given optimizers must implement the `\Spatie\ImageOptimizer\Optimizer`
+interface. See [Spatie Image Optimizer](https://github.com/spatie/image-optimizer) 
+for details.
+
+
 ## License
 
 This package is released unter MIT license.
