@@ -325,7 +325,7 @@
 		 * Creates a new imagine instance.
 		 * @return ImagineInterface
 		 */
-		protected function imagine(): ImagineInterface {
+		public function imagine(): ImagineInterface {
 
 			$driver = $this->driver();
 

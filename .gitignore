@@ -4,3 +4,4 @@ phpunit.xml
 /composer-test.json
 /composer-test.lock
 /composer.lock
+/test/out/

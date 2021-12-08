@@ -2,19 +2,15 @@
 
 This package provides image processing using [Imagine](https://github.com/php-imagine/Imagine)
 and optimization using [Spatie Image Optimizer](https://github.com/spatie/image-optimizer).
-[Libvips](https://github.com/libvips/libvips) support for Imagine is available through [Imagine-Vips](https://github.com/rokka-io/imagine-vips) and
-basic SVG manipulation is available through [Imagine SVG](https://github.com/contao/imagine-svg).
+[Libvips](https://github.com/libvips/libvips) support for Imagine is available through [Imagine-Vips](https://github.com/rokka-io/imagine-vips) and basic SVG manipulation is available through [Imagine SVG](https://github.com/contao/imagine-svg).
 
 Raster image processing can use different packages such as
 **imagick**, **gmagick**, **vips** and **gd** as backend.
 
 **Imagick** is a good choice if you need the full feature set of
-[Imagine](https://github.com/php-imagine/Imagine). **Vips** is
-faster and uses less memory, but requires a separate PHP extension
-and is missing some more advanced features.
+[Imagine](https://github.com/php-imagine/Imagine). **Vips** is faster and uses less memory, but requires a separate PHP extension and is missing some more advanced features.
 
-For optimization, additional libraries have to be installed at your
-system. See installation chapter.
+For optimization, additional libraries have to be installed at your system. See installation chapter.
 
 ## Installation
 
@@ -25,9 +21,8 @@ composer require mehr-it/levi-images
 ```
 
 ### Testing your installation
-This library depends on various system requirements for all 
-features to work. You can use following command to check
-the installed components:
+
+This library depends on various system requirements for all features to work. You can use following command to check the installed components:
 
 ```bash
 php ./artisan levi-images:test
@@ -35,10 +30,9 @@ php ./artisan levi-images:test
 
 ### Installing optimization tools
 
-The optimizer uses various optimization tools as they are
-available at your system:
+The optimizer uses various optimization tools as they are available at your system:
 
-- [JpegOptim](http://freecode.com/projects/jpegoptim) 
+- [JpegOptim](http://freecode.com/projects/jpegoptim)
 - [Optipng](http://optipng.sourceforge.net/)
 - [Pngquant 2](https://pngquant.org/)
 - [SVGO 1](https://github.com/svg/svgo)
@@ -58,11 +52,9 @@ sudo apt-get install webp
 
 For more details see [Spatie Image Optimizer](https://github.com/spatie/image-optimizer).
 
-
 ### Installing libvips driver
 
-[Libvips](https://github.com/libvips/libvips) is a fast, multi-threaded image processing
-library which needs far less memory than eg. Imagick.
+[Libvips](https://github.com/libvips/libvips) is a fast, multi-threaded image processing library which needs far less memory than eg. Imagick.
 
 Version 8.7 or higher of libvips is highly recommended. `paste` and `rotate` by angles other than multipliers of 90 are not supported with older versions of libvips.
 
@@ -92,34 +84,28 @@ You also need the [php-vips-ext](https://github.com/libvips/php-vips-ext) extens
 
 
 3. Install [Imagine-Vips](https://github.com/rokka-io/imagine-vips):
-   
+
    ```bash
    composer require rokka/imagine-vips
    ```
-
 
 ## Usage
 
 This package has three image processing sections.
 
-1. **Raster** Provides an API to load or create raster images
-   for manipulation or conversion to other formats.
+1. **Raster** Provides an API to load or create raster images for manipulation or conversion to other formats.
 
 
-2. **Vector** Provides an API to load vector images for 
-   some basic manipulation.
+2. **Vector** Provides an API to load vector images for some basic manipulation.
 
 
-3. **Optimization** provides an API to optimize images in their 
-   given format. Usually optimizers reduce the image file size 
-   and optimize the loading process, eg. interlaced loading.
+3. **Optimization** provides an API to optimize images in their given format. Usually optimizers reduce the image file size and optimize the loading process, eg. interlaced loading.
 
-
-You can access all APIs using the `LeviImages` facade, eg. 
+You can access all APIs using the `LeviImages` facade, eg.
 `LeviImages::raster()`.
 
-
 ### Raster images
+
 The raster image API can be accessed as follows:
 
 ```php
@@ -127,7 +113,7 @@ LeviImages::raster()
 ```
 
 It offers three different methods to open images:
-      
+
 ```php
 // open a file 
 $im = LeviImages::raster()->open('path/to/file.png');
@@ -144,14 +130,9 @@ for [Imagine](https://github.com/php-imagine/Imagine) image manipulations.
 
 #### Configuring the raster image driver
 
-The concrete implementation depends on the backends available at
-your system and your driver selection. By default a driver is
-chosen automatically. **Imagick** is preferred, if multiple 
-drivers are available. However, if you prefer another driver such
-as **Vips** you can set another default driver.
+The concrete implementation depends on the backends available at your system and your driver selection. By default a driver is chosen automatically. **Imagick** is preferred, if multiple drivers are available. However, if you prefer another driver such as **Vips** you can set another default driver.
 
-Use `php ./artisan vendor:publish` to publish the package configuration
-and set the desired driver:
+Use `php ./artisan vendor:publish` to publish the package configuration and set the desired driver:
 
 ```php
 // levi-images.php
@@ -167,6 +148,7 @@ return [
    ```
 
 #### Creating new raster images
+
 To create a new raster image from the scratch, simply call
 `create()` with the desired size and background color:
 
@@ -178,11 +160,10 @@ $im = LeviImages::raster()->create($size, $bgColor);
 ```
 
 #### Importing (vector) images
+
 Occasionally you might want to use [Imagine](https://github.com/php-imagine/Imagine)
 instances created by another library with your current driver or
-**import vector images** to merge them with raster images. You
-can easily do so by calling `import()`. The following example
-demonstrates how to merge a vector image with a raster image:
+**import vector images** to merge them with raster images. You can easily do so by calling `import()`. The following example demonstrates how to merge a vector image with a raster image:
 
 ```php
 $rasterImage = LeviImages::raster()->open('path/to/file.png');
@@ -195,12 +176,9 @@ $rasterImage->paste($imported, new Point(0, 0))
 
 **NOTE:** The `"gd"` driver does not support loading vector images.
 
-This returns a new image instance which can be used with the 
-current driver.
+This returns a new image instance which can be used with the current driver.
 
-Internally the imported image is exported in a compatible format
-and loaded utilizing the current driver.
-
+Internally the imported image is exported in a compatible format and loaded utilizing the current driver.
 
 ### Vector images
 
@@ -223,16 +201,10 @@ $im = LeviImages::raster()->load(/* image data as string */);
 $im = LeviImages::raster()->load(fopen('path/to/file.svg', 'r'));    
 ```
 
-All these methods return an instance of `Contao\ImagineSvg\Image`.
-Event though [Imagine SVG](https://github.com/contao/imagine-svg) implements the
-`Imagine\Image\ImageInterface`, it only offers a limited set of
-manipulations and some behave a little different from raster
-images. However, some basic operations, such as resizing are 
-available and very useful.
+All these methods return an instance of `Contao\ImagineSvg\Image`. Event though [Imagine SVG](https://github.com/contao/imagine-svg) implements the
+`Imagine\Image\ImageInterface`, it only offers a limited set of manipulations and some behave a little different from raster images. However, some basic operations, such as resizing are available and very useful.
 
-The vector image API does not offer methods for creating new
-images or importing from other instances.
-
+The vector image API does not offer methods for creating new images or importing from other instances.
 
 ### Optimization
 
@@ -242,17 +214,11 @@ The optimization API can be accessed as follows:
 LeviImages::optimizer()
 ```
 
-The optimizer utilizes different optimization libraries which
-are installed at your system and applies them to the files
-which should be optimized. If no optimization library for a 
-given file type is available, the file is silently kept as it
-is.
+The optimizer utilizes different optimization libraries which are installed at your system and applies them to the files which should be optimized. If no optimization library for a given file type is available, the file is silently kept as it is.
 
 #### Optimizing image files
 
-You can optimize image files using `optimizeFile()`. **If you
-do not want to modify the original file**, a separate output
-path can be given as second parameter:
+You can optimize image files using `optimizeFile()`. **If you do not want to modify the original file**, a separate output path can be given as second parameter:
 
 ```php
 // optimize file in place
@@ -267,8 +233,7 @@ LeviImages::optimizer()
 #### Optimizing resources
 
 If image data is available as resource, `optimizeResource()`
-processes the image and returns a new resource with optimized
-image data:
+processes the image and returns a new resource with optimized image data:
 
 ```php
 $res = LeviImages::optimizer()
@@ -277,26 +242,18 @@ $res = LeviImages::optimizer()
 
 #### Passing image instances
 
-If working with raster or vector image objects, you can directly pass
-the image object to `optimizeImage()`. However, you have to
-specify the desired output format as second parameter. You will
-receive a resource with the optimized image data:
+If working with raster or vector image objects, you can directly pass the image object to `optimizeImage()`. However, you have to specify the desired output format as second parameter. You will receive a resource with the optimized image data:
 
 ```php
 $res = LeviImages::optimizer()
     ->optimizeImage($img, Optimizer::FORMAT_PNG);
 ```
 
-**Note:** The only supported output format for vector images
-is `Optimizer::FORMAT_SVG`. If you want a raster image output,
-first import as raster image.
-
+**Note:** The only supported output format for vector images is `Optimizer::FORMAT_SVG`. If you want a raster image output, first import as raster image.
 
 #### Customizing optimizers
 
-If you want to use a custom set of optimizers or other than default
-optimization settings, you can set a resolver function which 
-returns the optimizers to use:
+If you want to use a custom set of optimizers or other than default optimization settings, you can set a resolver function which returns the optimizers to use:
 
 ```php
 LeviImages::optimizer()
@@ -318,10 +275,7 @@ LeviImages::optimizer()
     });
 ```
 
-Using `setOptimizersResolver()` changes the global optimizer chain.
-If you only want to change optimizers for a single optimization,
-you can use `useOptimizers()` to create a new instance with the
-given optimizers:
+Using `setOptimizersResolver()` changes the global optimizer chain. If you only want to change optimizers for a single optimization, you can use `useOptimizers()` to create a new instance with the given optimizers:
 
 ```php
 LeviImages::optimizer()
@@ -333,10 +287,22 @@ LeviImages::optimizer()
    );
 ```
 
+
 All given optimizers must implement the `\Spatie\ImageOptimizer\Optimizer`
-interface. See [Spatie Image Optimizer](https://github.com/spatie/image-optimizer) 
+interface. See [Spatie Image Optimizer](https://github.com/spatie/image-optimizer)
 for details.
 
+### Filters
+
+This library also includes some filters for raster images:
+
+|Filter|Drivers||
+|------|-----|-------|
+|AutoCrop|vips, imagick| crops background from edges|
+|Canvas| __all__ | adds a background color and an optional margin to images|
+|GrayScaleAlpha| __all__ | converts to grayscale but preserves the alpha channel |
+|GrayScaleMaxBlack | vips, imagick | converts to grayscale and stretches the histogram to make darkest color "black"|
+|Palette | __all__ | converts to a color palette|
 
 ## License
 

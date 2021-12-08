@@ -2,6 +2,7 @@
 
 	namespace MehrItLeviImagesTest\Unit\Cases;
 
+	use Illuminate\Support\Arr;
 	use MehrIt\LeviImages\Facades\LeviImages;
 	use MehrIt\LeviImages\Provider\LeviImagesServiceProvider;
 	use MehrIt\LeviImages\Util\TemporaryFiles;
@@ -26,6 +27,14 @@
 			return [
 				'LeviImages' => LeviImages::class,
 			];
+		}
+		
+		protected function testOutputPath(string $ext) {
+			
+			$cls = Arr::last(explode('\\', get_class($this)));
+			$function = $this->getName();
+			return __DIR__ . "/../../out/{$cls}_{$function}.{$ext}"; 
+			
 		}
 
 
@@ -62,10 +71,19 @@
 		protected function assertColorMatching(array $expected, array $actual, int $tolerance = 10) {
 			
 			foreach($actual as $comp => $value) {
-				$this->assertGreaterThanOrEqual($expected[$comp] - $tolerance / 2, $value);
-				$this->assertLessThanOrEqual($expected[$comp] + $tolerance / 2, $value);
+				
+				// convert non-alpha channel (null) to fully opaque (100)
+				if ($value === null)
+					$value = 100;
+				
+				$this->assertInTolerance($expected[$comp], $value, $tolerance);
 			}
 			
+		}
+		
+		protected function assertInTolerance($expected, $actual, $tolerance = 10) {
+			$this->assertGreaterThanOrEqual($expected - $tolerance / 2, $actual);
+			$this->assertLessThanOrEqual($expected + $tolerance / 2, $actual);
 		}
 		
 	}
