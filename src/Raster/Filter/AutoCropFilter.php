@@ -79,7 +79,7 @@
 
 
 					// only crop, if s.th. is left
-					if ($trim['width'] > 0 && $trim['height'] > 0)
+					if ($trim['width'] > 0 && $trim['height'] > 0 && $trim['left'] >= 0 && $trim['top'] >= 0)
 						$image->crop(new Point($trim['left'], $trim['top']), new Box($trim['width'], $trim['height']));
 				}
 
@@ -110,7 +110,7 @@
 					$trimmedHeight = $cropImage->getImageHeight();
 
 
-					if ($trimmedWidth > 0 && $trimmedHeight > 0 && ($trimmedWidth < $origSize->getWidth() || $trimmedHeight < $origSize->getHeight()))
+					if ($trimmedWidth > 0 && $trimmedHeight > 0 && $page['x'] >= 0 && $page['y'] >= 0 && ($trimmedWidth < $origSize->getWidth() || $trimmedHeight < $origSize->getHeight()))
 						$image->crop(new Point($page['x'], $page['y']), new Box($trimmedWidth, $trimmedHeight));
 				}
 				finally {

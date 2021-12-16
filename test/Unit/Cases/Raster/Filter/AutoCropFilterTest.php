@@ -35,8 +35,8 @@
 				
 				$imgAfterFilter->save($this->testOutputPath('png'));
 
-				$this->assertInTolerance($imgAfterFilter->getSize()->getWidth(), 1758, 50);
-				$this->assertInTolerance($imgAfterFilter->getSize()->getHeight(), 1256, 50);
+				$this->assertInTolerance(1758, $imgAfterFilter->getSize()->getWidth(), 50);
+				$this->assertInTolerance(1256, $imgAfterFilter->getSize()->getHeight(), 50);
 				
 				$this->assertSame($img, $imgAfterFilter);
 				
@@ -67,8 +67,8 @@
 
 				$imgAfterFilter->save($this->testOutputPath('jpg'));
 
-				$this->assertInTolerance($imgAfterFilter->getSize()->getWidth(), 880, 50);
-				$this->assertInTolerance($imgAfterFilter->getSize()->getHeight(), 832, 50);
+				$this->assertInTolerance(880, $imgAfterFilter->getSize()->getWidth(),  50);
+				$this->assertInTolerance(832, $imgAfterFilter->getSize()->getHeight(),  50);
 
 				$this->assertSame($img, $imgAfterFilter);
 				
@@ -99,8 +99,8 @@
 				
 				$imgAfterFilter->save($this->testOutputPath( 'png'));
 
-				$this->assertInTolerance($imgAfterFilter->getSize()->getWidth(), 1758, 50);
-				$this->assertInTolerance($imgAfterFilter->getSize()->getHeight(), 1256, 50);
+				$this->assertInTolerance(1758, $imgAfterFilter->getSize()->getWidth(), 50);
+				$this->assertInTolerance(1256, $imgAfterFilter->getSize()->getHeight(), 50);
 				
 				$this->assertSame($img, $imgAfterFilter);
 				
@@ -131,8 +131,8 @@
 
 				$imgAfterFilter->save($this->testOutputPath( 'jpg'));
 
-				$this->assertInTolerance($imgAfterFilter->getSize()->getWidth(), 880, 50);
-				$this->assertInTolerance($imgAfterFilter->getSize()->getHeight(), 832, 50);
+				$this->assertInTolerance(880, $imgAfterFilter->getSize()->getWidth(), 50);
+				$this->assertInTolerance(832, $imgAfterFilter->getSize()->getHeight(), 50);
 
 				$this->assertSame($img, $imgAfterFilter);
 				
