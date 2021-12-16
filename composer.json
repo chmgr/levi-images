@@ -52,6 +52,10 @@
     "mockery/mockery": "^1.4",
     "ext-imagick": "*"
   },
+  "suggest": {
+    "rokka-io/imagine-vips": "Needed for vips driver",
+    "ext-imagick": "Needed for imagick driver"
+  },
   "extra": {
     "laravel": {
       "providers": [
